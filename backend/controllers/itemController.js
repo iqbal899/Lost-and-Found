@@ -26,3 +26,14 @@ exports.getItems = async (req, res) => {
   const items = await Item.find().populate("createdBy", "firstname email");
   res.json(items);
 };
+
+exports.getItemById = async (req, res) => {
+  const { id } = req.params;
+
+  const item = await Item.findById(id).populate(
+    "createdBy",
+    "firstname email number"
+  );
+
+  res.json(item);
+};

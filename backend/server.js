@@ -14,10 +14,12 @@ app.use("/uploads", express.static("uploads"));
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api", require("./routes/itemRoutes"));
+app.use("/api", require("./routes/messageRoutes"));
 
 // DB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("DB Connected"))
   .catch(err => console.log(err));
 
-app.listen(5000, () => console.log("Server running"));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on ${PORT}`));
