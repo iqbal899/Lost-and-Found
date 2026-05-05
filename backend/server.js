@@ -13,7 +13,7 @@ app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
-
+app.use("/api", require("./routes/itemRoutes"));
 
 // DB
 mongoose.connect(process.env.MONGO_URI)
