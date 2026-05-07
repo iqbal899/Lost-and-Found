@@ -12,6 +12,12 @@ const itemSchema = new mongoose.Schema({
     }
   ],
 
+  status: {
+    type: String,
+    enum: ["open", "resolved"],
+    default: "open",
+  },
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
