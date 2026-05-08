@@ -97,3 +97,12 @@ exports.getContactDetails = async (req, res) => {
     });
   }
 };
+
+exports.getMyResponses = async (req, res) => {
+
+  const responses = await Message.find({
+    givenBy: req.user.id,
+  }).populate("itemId");
+
+  res.json(responses);
+};

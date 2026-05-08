@@ -5,6 +5,8 @@ const {
   submitAnswer,
   getAnswersByItem,
   confirmResponse,
+  getContactDetails,
+  getMyResponses,
 } = require("../controllers/messageController");
 
 const { requireSignin } = require("../middleware/authMiddleware");
@@ -16,6 +18,11 @@ router.get(
   "/contact/:id",
   requireSignin,
   getContactDetails
+);
+router.get(
+  "/my-responses",
+  requireSignin,
+  getMyResponses
 );
 
 module.exports = router;
