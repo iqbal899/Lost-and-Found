@@ -14,7 +14,6 @@ app.use("/uploads", express.static("uploads"));
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api", require("./routes/itemRoutes"));
-app.use("/api", require("./routes/messageRoutes"));
 app.use("/api", require("./routes/responseRoutes"));
 
 // DB
