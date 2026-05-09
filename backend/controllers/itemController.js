@@ -2,11 +2,12 @@ const Item = require("../models/Item");
 
 exports.createItem = async (req, res) => {
   try {
+
     let itemPictures = [];
 
-    if (req.files) {
-      itemPictures = req.files.map(file => ({
-        img: file.filename
+    if (req.files?.length > 0) {
+      itemPictures = req.files.map((file) => ({
+        img: file.filename,
       }));
     }
 
@@ -17,17 +18,23 @@ exports.createItem = async (req, res) => {
     });
 
     res.status(201).json(item);
+
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({
+      message: err.message,
+    });
   }
 };
 
-exports.getItems = async (req, res) => {
+exports.getAllItems = async (req, res) => {
+
   try {
 
     const items = await Item.find({
       status: "open",
-    }).populate("createdBy", "firstname");
+    })
+      .populate("createdBy", "firstname lastname")
+      .sort({ createdAt: -1 });
 
     res.json(items);
 
@@ -38,15 +45,29 @@ exports.getItems = async (req, res) => {
   }
 };
 
-exports.getItemById = async (req, res) => {
-  const { id } = req.params;
+exports.getSingleItem = async (req, res) => {
 
-  const item = await Item.findById(id).populate(
-    "createdBy",
-    "firstname email number"
-  );
+  try {
 
-  res.json(item);
+    const item = await Item.findById(req.params.id)
+      .populate("createdBy", "firstname lastname email number");
+
+    if (!item) {
+      return res.status(404).json({
+        message: "Item not found",
+      });
+    }
+
+    item.views += 1;
+    await item.save();
+
+    res.json(item);
+
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
 };
 
 exports.getMyItems = async (req, res) => {
