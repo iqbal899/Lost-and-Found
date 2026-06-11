@@ -100,7 +100,7 @@ export default function ItemDetailPage() {
                   className="relative shrink-0 snap-start h-56 sm:h-72 w-[85%] sm:w-[480px] rounded-2xl border border-border/50 bg-muted overflow-hidden shadow-sm hover:shadow transition-shadow duration-300"
                 >
                   <img
-                    src={`http://localhost:5000/uploads/${pic.img}`}
+                    src={`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/uploads/${item.img}`}
                     className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.01]"
                     alt={`${currentItem.title} thumbnail ${i + 1}`}
                     loading="lazy"
