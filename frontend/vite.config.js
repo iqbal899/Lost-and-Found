@@ -9,8 +9,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  build: {
-    // Tells Vite to compress CSS using esbuild instead of lightningcss, preventing the spacing function crash
-    cssMinify: "esbuild",
-  },
+  // Bypasses the strict CSS validator checks so modern sub-tokens don't crash your build
+  css: {
+    lightningcss: {
+      errorRecovery: true
+    }
+  }
 });
