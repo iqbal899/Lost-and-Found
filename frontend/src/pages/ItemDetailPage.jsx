@@ -18,6 +18,9 @@ export default function ItemDetailPage() {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
 
+    const baseApiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const ASSET_ROOT = baseApiUrl.replace(/\/api$/, "");
+
     useEffect(() => {
         fetchSingleItem(id);
     }, [id]);
@@ -94,19 +97,38 @@ export default function ItemDetailPage() {
                 {currentItem.itemPictures?.length > 0 && (
                     <div className="relative group">
                         <div className="flex gap-4 overflow-x-auto pb-3 pt-1 px-1 snap-x scroll-smooth no-scrollbar mask-image-edge">
-                            {currentItem.itemPictures.map((pic, i) => (
-                                <div
-                                    key={i}
-                                    className="relative shrink-0 snap-start h-56 sm:h-72 w-[85%] sm:w-[480px] rounded-2xl border border-border/50 bg-muted overflow-hidden shadow-sm hover:shadow transition-shadow duration-300"
-                                >
-                                    <img
-                                        src={`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/uploads/${currentItem.img}`} // <-- Fixed to currentItem
-                                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.01]"
-                                        alt={`${currentItem.title} thumbnail ${i + 1}`}
-                                        loading="lazy"
-                                    />
-                                </div>
-                            ))}
+                            {currentItem.itemPictures.map((pic, i) => {
+                                // Dynamically unpack properties whether it's an object or plain string tracking hash
+                                let currentImageFile = "";
+                                if (pic) {
+                                    if (typeof pic === "string") {
+                                        currentImageFile = pic;
+                                    } else if (pic.img) {
+                                        currentImageFile = pic.img;
+                                    } else if (pic.url) {
+                                        currentImageFile = pic.url;
+                                    }
+                                }
+
+                                if (!currentImageFile) return null;
+
+                                return (
+                                    <div
+                                        key={i}
+                                        className="relative shrink-0 snap-start h-56 sm:h-72 w-[85%] sm:w-[480px] rounded-2xl border border-border/50 bg-muted overflow-hidden shadow-sm hover:shadow transition-shadow duration-300"
+                                    >
+                                        <img
+                                            src={`${ASSET_ROOT}/uploads/${currentImageFile}`}
+                                            alt={`${currentItem.title}-${i}`}
+                                            loading="lazy"
+                                            className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.01]"
+                                            onError={() => {
+                                                console.log("Failed path:", `${ASSET_ROOT}/uploads/${currentImageFile}`);
+                                            }}
+                                        />
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -128,8 +150,6 @@ export default function ItemDetailPage() {
                     <div className="space-y-3 pt-2">
                         <div className="bg-gradient-to-br from-card/60 to-card/30 backdrop-blur-md border border-border/70 rounded-2xl p-5 sm:p-6 shadow-md shadow-foreground/[0.01]">
                             <div className="flex flex-col gap-4">
-
-                                {/* Header question context */}
                                 <div className="flex items-start gap-3">
                                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/10">
                                         <ShieldCheck className="w-4 h-4" />
@@ -151,7 +171,6 @@ export default function ItemDetailPage() {
                                     </p>
                                 </div>
 
-                                {/* Submitting Flow Toggle Blocks */}
                                 {submitted ? (
                                     <div className="rounded-xl bg-emerald-500/10 p-4 text-xs sm:text-sm font-medium text-emerald-600 dark:text-emerald-400 border border-emerald-500/15 animate-in fade-in zoom-in-95 duration-200 mt-2">
                                         ✓ Your verification reply was logged successfully. The item owner has been notified to check your match data.
@@ -162,13 +181,13 @@ export default function ItemDetailPage() {
                                             placeholder="Type structural descriptions, color labels, serial codes or key clues..."
                                             value={answer}
                                             onChange={(e) => setAnswer(e.target.value)}
-                                            className="bg-background/60 min-h-[100px] p-3.5 border-muted-foreground/20 rounded-xl resize-y transition-all focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-primary/50 placeholder:text-muted-foreground/60 text-sm"
+                                            className="bg-background/60 min-h-[100px] p-3.5 border-muted-foreground/20 rounded-xl resize-y transition-all text-sm"
                                             required
                                         />
                                         <Button
                                             type="submit"
                                             disabled={submitting}
-                                            className="w-full sm:w-auto h-10 px-6 font-medium rounded-lg shadow-sm active:scale-[0.985] transition-all duration-150"
+                                            className="w-full sm:w-auto h-10 px-6 font-medium rounded-lg"
                                         >
                                             {submitting ? (
                                                 <span className="flex items-center gap-2">
@@ -186,7 +205,6 @@ export default function ItemDetailPage() {
                     </div>
                 )}
 
-                {/* Logged Out Safety Warning */}
                 {!user && (
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border border-dashed border-border p-5 rounded-2xl bg-card/20 backdrop-blur-[1px] text-center sm:text-left mt-6">
                         <div className="space-y-0.5">
